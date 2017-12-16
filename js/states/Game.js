@@ -19,6 +19,8 @@ LittleStar.Game = function (game)
   this.crateGroup;
   this.planetGroup;
 
+
+  this.onGround = false;
   this.player;
   this.playerForceLeftRight = 0;
   this.playerSpeed = 10;
@@ -91,6 +93,7 @@ LittleStar.Game.prototype =
     this.buttons = this.input.keyboard.addKeys(
         {
           zoom: Phaser.KeyCode.Z,
+          jump: Phaser.KeyCode.SPACEBAR,
         }
       );
     this.buttons.zoom.onDown.add(this.startZoom, this);
@@ -103,13 +106,54 @@ LittleStar.Game.prototype =
     // camera: set to follow player (follow styles: https://phaser.io/examples/v2/camera/follow-styles)
     this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
 
-    this.game.camera.scale.x = 30;
-    this.game.camera.scale.y = 30;
+
+    for (var type = 0; type < 5; type++) {
+        for (var i = 0; i < 10; i++) {
+            this.addEnemy(i+ type/5, type);
+        }
+    }
+
+    this.game.camera.scale.x = 2;
+    this.game.camera.scale.y = 2;
+
+
+    //this.player.body.collides(this.planetGroup, this.setOnGround, this);
+
+    this.player.body.onBeginContact.add(this.blockHit, this);
+
+},
+
+blockHit: function(body, bodyB, shapeA, shapeB, equation) {
+
+    //  The block hit something.
+    //
+    //  This callback is sent 5 arguments:
+    //
+    //  The Phaser.Physics.P2.Body it is in contact with. *This might be null* if the Body was created directly in the p2 world.
+    //  The p2.Body this Body is in contact with.
+    //  The Shape from this body that caused the contact.
+    //  The Shape from the contact body.
+    //  The Contact Equation data array.
+    //
+    //  The first argument may be null or not have a sprite property, such as when you hit the world bounds.
+    if (body)
+    {
+        this.debug = 'You last hit: ' + body.sprite.key;
+        if(body.sprite.key == "erde")
+            this.onGround = true;
+    }
+    else
+    {
+        this.debug  = 'You last hit: The wall :)';
+    }
 
 },
   update: function()
   {
 
+
+
+     //this.player.body.setZeroVelocity();
     if (this.cursors.up.isDown)
     {
         this.game.world.rotation -= 0.05;
@@ -120,12 +164,19 @@ LittleStar.Game.prototype =
     }
     if (this.cursors.left.isDown)
     {
-        this.playerForceLeftRight = this.playerSpeed;
+        this.playerForceLeftRight = -this.playerSpeed;
     }
     else if (this.cursors.right.isDown)
     {
-        this.playerForceLeftRight = -this.playerSpeed;
+        this.playerForceLeftRight = this.playerSpeed;
     }
+    if (this.buttons.jump.isDown && (this.onGround))
+    {
+        console.log("jump");
+        this.player.body.velocity.y = -40;
+        this.onGround = false;
+    }
+
 
     this.crateGroup.forEachAlive(this.moveBullets,this);  //make bullets accelerate to ship
 
@@ -141,14 +192,23 @@ LittleStar.Game.prototype =
 
         }
 
-    this.crateGroup.forEachAlive(this.accelerateToObject,this, this.playerForceLeftRight, 80);
+    this.crateGroup.forEachAlive(this.moveEnemy,this, 80);
+    this.movePlayer(this.player, 80);
+
 
     this.playerForceLeftRight = 0;
-    this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
+    this.game.world.rotation = -this.player.body.rotation;
+  },
+  setOnGround: function() {
+      this.onGround = true;
   },
 
-  moveBullets: function(bullet) {
-       this.accelerateToObject(bullet, 0, 40);  //start accelerateToObject on every bullet
+  moveEnemy: function(bullet, forceLeftRight, speed) {
+       this.accelerateToObject(bullet, 0, speed);  //start accelerateToObject on every bullet
+  },
+
+  movePlayer: function(bullet, forceLeftRight, speed) {
+       this.accelerateToObject(bullet, this.playerForceLeftRight, speed);  //start accelerateToObject on every bullet
   },
 
   accelerateToObject: function(obj1, forceLeftRight, speed) {
@@ -158,7 +218,7 @@ LittleStar.Game.prototype =
           (member) =>
           {
             var angle = Math.atan2(member.y - obj1.y, member.x - obj1.x);
-            obj1.body.rotation = angle + this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
+            obj1.body.rotation = angle - this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
             obj1.body.force.x = Math.cos(angle) * speed + Math.cos(obj1.body.rotation) * forceLeftRight;    // accelerateToObject
             obj1.body.force.y = Math.sin(angle) * speed + Math.sin(obj1.body.rotation) * forceLeftRight;
           }, this)
@@ -179,6 +239,8 @@ LittleStar.Game.prototype =
 
         }, this);
     }
+
+    this.game.debug.text(this.debug, 32, 32);
 },
 // function to add a crate
 addCrate: function(e){
@@ -189,9 +251,31 @@ addCrate: function(e){
     crateSprite.height = this.playerSize *5;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
-	this.crateGroup.add(crateSprite);
+	//this.crateGroup.add(crateSprite);
 	this.game.physics.p2.enable(crateSprite);
   this.player = crateSprite;
+
+},
+
+// function to add a crate
+addEnemy: function(angle, enemyType){
+
+    var radius = 150;
+
+    var x = radius * Math.sin(angle); //this.game.world.rotation + 45);
+    var y = radius * Math.cos(angle); //this.game.world.rotation + 45);
+
+    var texture = "enemy" + enemyType;
+
+
+	var crateSprite = this.game.add.sprite(x, y, texture);
+
+    crateSprite.width = 2 + enemyType * 4;
+    crateSprite.height = 2 + enemyType * 4;
+
+    //var crateSprite = this.game.add.sprite(x, y, "crate");
+	this.crateGroup.add(crateSprite);
+	this.game.physics.p2.enable(crateSprite);
 
 },
 
