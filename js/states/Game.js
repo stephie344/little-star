@@ -139,6 +139,7 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
               body.sprite.kill();
             } else {
               this.debug = 'you are dead';
+              this.state.start('Bam');
             }
           }
         }

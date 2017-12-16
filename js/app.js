@@ -8,7 +8,7 @@ window.onload = function()
     LittleStar.phasergame.state.add('Load', LittleStar.Load);
     LittleStar.phasergame.state.add('Title', LittleStar.Title);
     LittleStar.phasergame.state.add('Game', LittleStar.Game);
-
+    LittleStar.phasergame.state.add('Bam', LittleStar.Bam);
     // start Title state
     LittleStar.phasergame.state.start('Boot');
 };
