@@ -33,26 +33,18 @@ LittleStar.Game = function (game)
 
 };
 
-var zooming = false;
-var zoomAmount = 0;
-var cursors;
-var size = new Phaser.Rectangle();
-
 LittleStar.Game.prototype =
 {
   preload: function ()
   {
-      //this.physics.startSystem(Phaser.Physics.ARCADE);
       this.physics.startSystem(Phaser.Physics.P2JS);
-
-      //this.physics.startSystem(Phaser.Physics.BOX2D);
   },
   create: function ()
   {
       this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH / 2), -(LittleStar.SCREEN_HEIGHT / 2), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH), -(LittleStar.SCREEN_HEIGHT), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
-  // adding groups
+      // adding groups
 
   		this.crateGroup = this.game.add.group();
   		this.planetGroup = this.game.add.group();
@@ -87,27 +79,11 @@ LittleStar.Game.prototype =
 		// gravity radius
 		// gravity force
 		// graphic asset
-
-	    //this.addPlanet(180, 200, 250, 150, "planet");
-    	//this.addPlanet(0, 0, 400, 250, "bigplanet");
+        this.addPlanet(0, 0, 400, 250, "bigplanet");
 
 		// waiting for player input
-
 		this.input.onDown.add(this.addCrate, this);
-
-
-    this.cursors = this.input.keyboard.createCursorKeys();
-    // buttons
-    this.buttons = this.input.keyboard.addKeys(
-        {
-          zoom: Phaser.KeyCode.Z,
-        }
-      );
-      this.buttons.zoom.onDown.add(this.startZoom, this);
-        this.buttons.zoom.onUp.add(this.stopZoom, this);
-
-
-        size.setTo(-960, -600, 1920, 1200);
+        this.cursors = this.input.keyboard.createCursorKeys();
 },
   update: function()
   {
@@ -151,7 +127,6 @@ LittleStar.Game.prototype =
 
     this.playerForceRight = 0;
     this.playerForceLeft = 0;
-    //this.accelerateToObject(bullet, this.playerForceRight, this.playerForceLeft, 40);
   },
 
   moveBullets: function(bullet) {
@@ -168,8 +143,6 @@ LittleStar.Game.prototype =
             obj1.body.rotation = angle + this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
             obj1.body.force.x = Math.cos(angle) * speed + Math.cos(obj1.body.rotation) * forceLeftRight;    // accelerateToObject
             obj1.body.force.y = Math.sin(angle) * speed + Math.sin(obj1.body.rotation) * forceLeftRight;
-
-
           }, this)
 
   },
@@ -235,19 +208,6 @@ addPlanet: function(posX, posY, gravityRadius, gravityForce, asset){
 
 	planet.body.setCircle(planet.width / 2);
 	gravityGraphics.drawCircle(planet.x, planet.y, planet.width+planet.gravityRadius);
-},
+}
 
-startZoom:function(pointer){
-    zooming = true;
-    if (pointer.button === Phaser.Mouse.LEFT_BUTTON) {
-        zoomAmount = -0.05;
-    }
-    else {
-        zoomAmount = 0.05;
-    }
-},
-
-stopZoom:function(pointer){
-    zooming = false;
-},
 };
