@@ -129,7 +129,6 @@ LittleStar.Game.prototype =
         this.playerForceLeftRight = -this.playerSpeed;
     }
 
-<<<<<<< HEAD
     this.crateGroup.forEachAlive(this.moveBullets,this);  //make bullets accelerate to ship
 
     if (zooming)
@@ -144,8 +143,7 @@ LittleStar.Game.prototype =
 
         }
 
-      
-=======
+
 
 
 
@@ -154,7 +152,6 @@ LittleStar.Game.prototype =
     this.playerForceRight = 0;
     this.playerForceLeft = 0;
     //this.accelerateToObject(bullet, this.playerForceRight, this.playerForceLeft, 40);
->>>>>>> 5e0456939dd79b17d4ec6af3fdfd5db487f937a7
   },
 
   moveBullets: function(bullet) {
