@@ -19,6 +19,9 @@ LittleStar.Game = function (game)
   this.crateGroup;
   this.planetGroup;
 
+  this.playerForceLeftRight = 0;
+  this.playerSpeed = 30;
+
   this.alien;
 
   this.buttons;
@@ -111,21 +114,22 @@ LittleStar.Game.prototype =
 
     if (this.cursors.up.isDown)
     {
-        this.game.camera.y -= 4;
+        this.game.world.rotation -= 0.05;
     }
     else if (this.cursors.down.isDown)
     {
-        this.game.camera.y += 4;
+        this.game.world.rotation += 0.05;
     }
     if (this.cursors.left.isDown)
     {
-        this.game.world.rotation -= 0.05;
+        this.playerForceLeftRight = this.playerSpeed;
     }
     else if (this.cursors.right.isDown)
     {
-        this.game.world.rotation += 0.05;
+        this.playerForceLeftRight = -this.playerSpeed;
     }
 
+<<<<<<< HEAD
     this.crateGroup.forEachAlive(this.moveBullets,this);  //make bullets accelerate to ship
 
     if (zooming)
@@ -141,13 +145,23 @@ LittleStar.Game.prototype =
         }
 
       
+=======
+
+
+
+    this.crateGroup.forEachAlive(this.accelerateToObject,this, this.playerForceLeftRight, 80);
+
+    this.playerForceRight = 0;
+    this.playerForceLeft = 0;
+    //this.accelerateToObject(bullet, this.playerForceRight, this.playerForceLeft, 40);
+>>>>>>> 5e0456939dd79b17d4ec6af3fdfd5db487f937a7
   },
 
   moveBullets: function(bullet) {
-       this.accelerateToObject(bullet,40);  //start accelerateToObject on every bullet
+       this.accelerateToObject(bullet, 0, 40);  //start accelerateToObject on every bullet
   },
 
-  accelerateToObject: function(obj1, speed) {
+  accelerateToObject: function(obj1, forceLeftRight, speed) {
       if (typeof speed === 'undefined') { speed = 30; }
 
         this.planetGroup.forEachAlive(
@@ -155,8 +169,9 @@ LittleStar.Game.prototype =
           {
             var angle = Math.atan2(member.y - obj1.y, member.x - obj1.x);
             obj1.body.rotation = angle + this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
-            obj1.body.force.x = Math.cos(angle) * speed;    // accelerateToObject
-            obj1.body.force.y = Math.sin(angle) * speed;
+            obj1.body.force.x = Math.cos(angle) * speed + Math.cos(obj1.body.rotation) * forceLeftRight;    // accelerateToObject
+            obj1.body.force.y = Math.sin(angle) * speed + Math.sin(obj1.body.rotation) * forceLeftRight;
+
 
           }, this)
 
@@ -203,7 +218,7 @@ addCrate: function(e){
     var x = radius * Math.sin(Math.asin((e.x / radius) - this.game.world.rotation));//this.game.world.rotation + 45);
     var y = radius * Math.cos(Math.acos((e.y / radius) - this.game.world.rotation));//this.game.world.rotation + 45);
 
-	var crateSprite = this.game.add.sprite(-200, -100, "crate");
+	var crateSprite = this.game.add.sprite(0, -150, "crate");
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	this.crateGroup.add(crateSprite);
 	this.game.physics.p2.enable(crateSprite);
