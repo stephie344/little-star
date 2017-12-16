@@ -136,8 +136,7 @@ LittleStar.Game.prototype =
 
     this.crateGroup.forEachAlive(this.accelerateToObject,this, this.playerForceLeftRight, 80);
 
-    this.playerForceRight = 0;
-    this.playerForceLeft = 0;
+    this.playerForceLeftRight = 0;
   },
 
   moveBullets: function(bullet) {
@@ -177,7 +176,7 @@ LittleStar.Game.prototype =
 addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
-    
+
     crateSprite.width = this.playerSize *5 + 5;
     crateSprite.height = this.playerSize *5 + 5;
 
