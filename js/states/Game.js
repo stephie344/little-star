@@ -141,6 +141,18 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     if (body)
     {
         this.debug = 'You last hit: ' + body.sprite.key;
+        for (var i = 0; i < 6; i++) {
+          if (body.sprite.key == "enemy" + i) {
+            if (points >= (i * 5)) {
+              points += 1;
+              body.sprite.kill();
+            } else {
+              this.debug = 'you are dead';
+            }
+          }
+        }
+
+        console.log(points);
         if(body.sprite.key == "erde")
             this.onGround = true;
     }
