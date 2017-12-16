@@ -21,6 +21,7 @@ LittleStar.Game = function (game)
 
   this.playerForceLeftRight = 0;
   this.playerSpeed = 30;
+  this.playerSize = 1;
 
   this.alien;
 
@@ -175,30 +176,11 @@ LittleStar.Game.prototype =
 // function to add a crate
 addCrate: function(e){
 
-    var radius = Math.sqrt(Math.pow(e.x, 2) + Math.pow(e.y, 2));
-    console.log("radius: " + radius);
+	var crateSprite = this.game.add.sprite(0, -150, "player0");
+    
+    crateSprite.width = this.playerSize *5 + 5;
+    crateSprite.height = this.playerSize *5 + 5;
 
-    console.log("x: " + e.x);
-    console.log("y: " + e.y);
-
-    e.x = e.x - LittleStar.SCREEN_WIDTH / 2;
-    e.y = e.y - LittleStar.SCREEN_HEIGHT / 2;
-
-    console.log("new x: " + e.x);
-    console.log("new y: " + e.y);
-
-    console.log("asin: " + Math.asin(e.x / radius));
-    console.log("acos: " + Math.acos(e.y / radius));
-
-    console.log("rotation: " + this.game.world.rotation)
-
-    console.log("new sin: " + (Math.asin(e.x / radius) - this.game.world.rotation));
-    console.log("new cos: " + (Math.acos(e.y / radius) - this.game.world.rotation));
-
-    var x = radius * Math.sin(Math.asin((e.x / radius) - this.game.world.rotation));//this.game.world.rotation + 45);
-    var y = radius * Math.cos(Math.acos((e.y / radius) - this.game.world.rotation));//this.game.world.rotation + 45);
-
-	var crateSprite = this.game.add.sprite(0, -150, "crate");
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	this.crateGroup.add(crateSprite);
 	this.game.physics.p2.enable(crateSprite);
