@@ -25,7 +25,10 @@ LittleStar.Game = function (game)
   this.player;
   this.playerForceLeftRight = 0;
   this.playerSpeed = 10;
-  this.playerSize = 1;
+  this.playerSize = 2;
+  this.playerBiggerThanEnemy = 3;
+
+  this.enemies = 14;
 
   this.alien;
 
@@ -106,8 +109,8 @@ LittleStar.Game.prototype =
     this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
 
 
-    this.game.camera.scale.x = 40;
-    this.game.camera.scale.y = 40;
+    //this.game.camera.scale.x = 40;
+    //this.game.camera.scale.y = 40;
 
 
     //this.player.body.collides(this.planetGroup, this.setOnGround, this);
@@ -132,7 +135,7 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     if (body)
     {
         this.debug = 'You last hit: ' + body.sprite.key;
-        for (var i = 0; i < 6; i++) {
+        for (var i = 0; i < this.enemies; i++) {
           if (body.sprite.key == "enemy" + i) {
             if (points >= (i * 5)) {
               points += 1;
@@ -158,8 +161,6 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
 },
   update: function()
   {
-
-
 
      //this.player.body.setZeroVelocity();
     if (this.cursors.up.isDown)
@@ -188,7 +189,7 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
 
     this.crateGroup.forEachAlive(this.moveBullets,this);  //make bullets accelerate to ship
 
-    if (zooming)
+    /*if (zooming)
         {
             this.game.camera.scale.x += zoomAmount;
             this.game.camera.scale.y += zoomAmount;
@@ -197,8 +198,7 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
             this.game.camera.bounds.y = size.y * this.game.camera.scale.y;
             this.game.camera.bounds.width = size.width * this.game.camera.scale.x;
             this.game.camera.bounds.height = size.height * this.game.camera.scale.y;
-
-        }
+        }*/
 
     //this.crateGroup.forEachAlive(this.moveEnemy,this, 80);
     this.enemyGroup.forEachAlive(this.moveEnemy,this, 80);
@@ -208,14 +208,14 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     this.playerForceLeftRight = 0;
     this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
 
-    for (var i = 0; i < 7; i++) {
+    for (var i = 0; i < this.enemies; i++) {
         if(lastPoints != points)
         {
           if (points == i*5) {
-            this.game.camera.scale.x = 15 - i * 2;
-            this.game.camera.scale.y = 15 - i * 2;
-            this.player.width = (points/5) * 4 + 1;
-            this.player.height = (points/5) * 4 + 1;
+            this.game.camera.scale.x = 24 - (23 * i / (this.enemies - 1));
+            this.game.camera.scale.y = 24 - (23 * i / (this.enemies - 1));
+            this.player.width = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
+            this.player.height = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
             this.player.body.setCircle(this.player.width / 2);
 
             this.spawneEnemies();
@@ -279,7 +279,7 @@ spawneEnemies: function(){
     }, this);
 
         for (var type = points/5; type <= points/5+1; type++) {
-            for (var i = 0; i < 20; i++) {
+            for (var i = 0; i < 16 - (points/5); i++) {
                 this.addEnemy(i+ type/5, type);
             }
         }
@@ -290,8 +290,8 @@ addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
 
-    crateSprite.width = this.playerSize *4-3;
-    crateSprite.height = this.playerSize *4-3;
+    crateSprite.width = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
+    crateSprite.height = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(crateSprite);
@@ -313,8 +313,8 @@ addEnemy: function(angle, enemyType){
 
 	var enemy = this.game.add.sprite(x, y, texture);
 
-    enemy.width = enemyType * 4 + 1;
-    enemy.height = enemyType * 4 + 1;
+    enemy.width = enemyType * this.playerSize + 1;
+    enemy.height = enemyType * this.playerSize + 1;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(enemy);

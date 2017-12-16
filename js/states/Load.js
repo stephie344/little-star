@@ -32,19 +32,12 @@ LittleStar.Load.prototype =
 	this.load.image("platform", "assets/sprites/platform.png");
     this.load.image("erde", "assets/sprites/erde.png");
 
-	this.load.image("player0", "assets/sprites/player/p0.png");
-	this.load.image("player1", "assets/sprites/player/p1.png");
-	this.load.image("player2", "assets/sprites/player/p2.png");
-	this.load.image("player3", "assets/sprites/player/p3.png");
-	this.load.image("player4", "assets/sprites/player/p4.png");
-	this.load.image("player5", "assets/sprites/player/p5.png");
+    for(var i = 0; i < 14; i++)
+    {
+        this.load.image("player"+i, "assets/sprites/player/p"+i+".png");
+        this.load.image("enemy"+i, "assets/sprites/enemies/e"+i+".png");
+    }
 
-	this.load.image("enemy0", "assets/sprites/enemies/e0.png");
-	this.load.image("enemy1", "assets/sprites/enemies/e1.png");
-	this.load.image("enemy2", "assets/sprites/enemies/e2.png");
-	this.load.image("enemy3", "assets/sprites/enemies/e3.png");
-	this.load.image("enemy4", "assets/sprites/enemies/e4.png");
-	this.load.image("enemy5", "assets/sprites/enemies/e5.png");
 
     this.load.image('bg', 'assets/kenney_physicsAssets_v2/bgs/colored_desert.png');
     this.load.atlasXML('aliens', 'assets/kenney_physicsAssets_v2/Spritesheet/spritesheet_aliens.png','assets/kenney_physicsAssets_v2/Spritesheet/spritesheet_aliens.xml' );
