@@ -140,23 +140,7 @@ LittleStar.Game.prototype =
 
         }
 
-        if (cursors.up.isDown)
-        {
-            this.game.camera.y -= 4;
-        }
-        else if (cursors.down.isDown)
-        {
-            this.game.camera.y += 4;
-        }
-
-        if (cursors.left.isDown)
-        {
-            this.game.camera.x -= 4;
-        }
-        else if (cursors.right.isDown)
-        {
-            this.game.camera.x += 4;
-        }
+      
   },
 
   moveBullets: function(bullet) {
