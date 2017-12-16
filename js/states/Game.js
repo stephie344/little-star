@@ -115,8 +115,8 @@ LittleStar.Game.prototype =
         }
     }
 
-    this.game.camera.scale.x = 2;
-    this.game.camera.scale.y = 2;
+    this.game.camera.scale.x = 40;
+    this.game.camera.scale.y = 40;
 
 
     //this.player.body.collides(this.planetGroup, this.setOnGround, this);
@@ -203,24 +203,17 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     this.playerForceLeftRight = 0;
     this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
 
-    if (points == 5) {
-      this.game.camera.scale.x = 15;
-      this.game.camera.scale.y = 15;
-      this.player.width = this.playerSize *10;
-      this.player.height = this.playerSize *10;
+    for (var i = 1; i < 6; i++) {
+      if (points == i*5) {
+        this.game.camera.scale.x = 15 - i * 2;
+        this.game.camera.scale.y = 15 - i * 2;
+        this.player.width = (points/5) *4-3;
+        this.player.height = (points/5) *4-3;
+        this.player.body.setCircle(this.player.width / 2);
+      }
     }
-    if (points == 10) {
-      this.game.camera.scale.x = 5;
-      this.game.camera.scale.y = 5;
-      this.player.width = this.playerSize *30;
-      this.player.height = this.playerSize *30;
-    }
-    if (points == 15) {
-      this.game.camera.scale.x = 1;
-      this.game.camera.scale.y = 1;
-      this.player.width = this.playerSize *100;
-      this.player.height = this.playerSize *100;
-    }
+
+
     this.game.world.rotation = -this.player.body.rotation;
   },
   setOnGround: function() {
@@ -271,8 +264,8 @@ addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
 
-    crateSprite.width = this.playerSize *5;
-    crateSprite.height = this.playerSize *5;
+    crateSprite.width = this.playerSize *4-3;
+    crateSprite.height = this.playerSize *4-3;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(crateSprite);
@@ -294,8 +287,8 @@ addEnemy: function(angle, enemyType){
 
 	var crateSprite = this.game.add.sprite(x, y, texture);
 
-    crateSprite.width = 2 + enemyType * 4;
-    crateSprite.height = 2 + enemyType * 4;
+    crateSprite.width = enemyType * 4 + 1;
+    crateSprite.height = enemyType * 4 + 1;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	this.crateGroup.add(crateSprite);
