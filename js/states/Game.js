@@ -30,6 +30,11 @@ LittleStar.Game = function (game)
 
 };
 
+var zooming = false;
+var zoomAmount = 0;
+var cursors;
+var size = new Phaser.Rectangle();
+
 LittleStar.Game.prototype =
 {
   preload: function ()
@@ -88,9 +93,18 @@ LittleStar.Game.prototype =
 		this.input.onDown.add(this.addCrate, this);
 
 
-        this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors = this.input.keyboard.createCursorKeys();
+    // buttons
+    this.buttons = this.input.keyboard.addKeys(
+        {
+          zoom: Phaser.KeyCode.Z,
+        }
+      );
+      this.buttons.zoom.onDown.add(this.startZoom, this);
+        this.buttons.zoom.onUp.add(this.stopZoom, this);
 
 
+        size.setTo(-960, -600, 1920, 1200);
 },
   update: function()
   {
@@ -113,6 +127,36 @@ LittleStar.Game.prototype =
     }
 
     this.crateGroup.forEachAlive(this.moveBullets,this);  //make bullets accelerate to ship
+
+    if (zooming)
+        {
+            this.game.camera.scale.x += zoomAmount;
+            this.game.camera.scale.y += zoomAmount;
+
+            this.game.camera.bounds.x = size.x * this.game.camera.scale.x;
+            this.game.camera.bounds.y = size.y * this.game.camera.scale.y;
+            this.game.camera.bounds.width = size.width * this.game.camera.scale.x;
+            this.game.camera.bounds.height = size.height * this.game.camera.scale.y;
+
+        }
+
+        if (cursors.up.isDown)
+        {
+            this.game.camera.y -= 4;
+        }
+        else if (cursors.down.isDown)
+        {
+            this.game.camera.y += 4;
+        }
+
+        if (cursors.left.isDown)
+        {
+            this.game.camera.x -= 4;
+        }
+        else if (cursors.right.isDown)
+        {
+            this.game.camera.x += 4;
+        }
   },
 
   moveBullets: function(bullet) {
@@ -195,6 +239,19 @@ addPlanet: function(posX, posY, gravityRadius, gravityForce, asset){
 
 	planet.body.setCircle(planet.width / 2);
 	gravityGraphics.drawCircle(planet.x, planet.y, planet.width+planet.gravityRadius);
-}
+},
 
+startZoom:function(pointer){
+    zooming = true;
+    if (pointer.button === Phaser.Mouse.LEFT_BUTTON) {
+        zoomAmount = -0.05;
+    }
+    else {
+        zoomAmount = 0.05;
+    }
+},
+
+stopZoom:function(pointer){
+    zooming = false;
+},
 };
