@@ -32,6 +32,10 @@ LittleStar.Game = function (game)
 
 
 };
+var zooming = false;
+var zoomAmount = 0;
+var cursors;
+var size = new Phaser.Rectangle();
 
 LittleStar.Game.prototype =
 {
@@ -83,7 +87,17 @@ LittleStar.Game.prototype =
 
 		// waiting for player input
 		this.input.onDown.add(this.addCrate, this);
-        this.cursors = this.input.keyboard.createCursorKeys();
+    this.cursors = this.input.keyboard.createCursorKeys();
+
+        // buttons
+    this.buttons = this.input.keyboard.addKeys(
+        {
+          zoom: Phaser.KeyCode.Z,
+        }
+      );
+    this.buttons.zoom.onDown.add(this.startZoom, this);
+    this.buttons.zoom.onUp.add(this.stopZoom, this);
+    size.setTo(-960, -600, 1920, 1200);
 },
   update: function()
   {
@@ -118,10 +132,6 @@ LittleStar.Game.prototype =
             this.game.camera.bounds.height = size.height * this.game.camera.scale.y;
 
         }
-
-
-
-
 
     this.crateGroup.forEachAlive(this.accelerateToObject,this, this.playerForceLeftRight, 80);
 
@@ -208,6 +218,19 @@ addPlanet: function(posX, posY, gravityRadius, gravityForce, asset){
 
 	planet.body.setCircle(planet.width / 2);
 	gravityGraphics.drawCircle(planet.x, planet.y, planet.width+planet.gravityRadius);
-}
+},
+startZoom:function(pointer){
+    zooming = true;
+    if (pointer.button === Phaser.Mouse.LEFT_BUTTON) {
+        zoomAmount = -0.05;
+    }
+    else {
+        zoomAmount = 0.05;
+    }
+},
+
+stopZoom:function(pointer){
+    zooming = false;
+},
 
 };
