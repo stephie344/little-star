@@ -21,7 +21,7 @@ LittleStar.Game = function (game)
 
   this.player;
   this.playerForceLeftRight = 0;
-  this.playerSpeed = 30;
+  this.playerSpeed = 10;
   this.playerSize = 1;
 
   this.alien;
@@ -73,10 +73,6 @@ LittleStar.Game.prototype =
             var bullet = bullets.create(this.game.rnd.integerInRange(200, 1700), this.game.rnd.integerInRange(-200, 400), 'crate');
             this.game.physics.p2.enable(bullet,false);
         }
-        cursors = this.game.input.keyboard.createCursorKeys();
-        //ship = this.game.add.sprite(0, 0, 'planet');
-        this.addPlanet(0, 0, 400, 250, "bigplanet");
-
         //this.game.physics.p2.enable(ship);
         //ship.body.static = true;
 		// adding a couple of planets. Arguments are:
@@ -85,7 +81,7 @@ LittleStar.Game.prototype =
 		// gravity radius
 		// gravity force
 		// graphic asset
-        this.addPlanet(0, 0, 400, 250, "bigplanet");
+        this.addPlanet(0, 0, 400, 250, "erde");
 
 		// waiting for player input
 		this.input.onDown.add(this.addCrate, this);
@@ -106,6 +102,9 @@ LittleStar.Game.prototype =
     this.player.x;
     // camera: set to follow player (follow styles: https://phaser.io/examples/v2/camera/follow-styles)
     this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
+
+    this.game.camera.scale.x = 30;
+    this.game.camera.scale.y = 30;
 
 },
   update: function()
@@ -186,8 +185,8 @@ addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
 
-    crateSprite.width = this.playerSize *5 + 5;
-    crateSprite.height = this.playerSize *5 + 5;
+    crateSprite.width = this.playerSize *5;
+    crateSprite.height = this.playerSize *5;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	this.crateGroup.add(crateSprite);
@@ -200,6 +199,11 @@ addCrate: function(e){
 
 addPlanet: function(posX, posY, gravityRadius, gravityForce, asset){
 	var planet = this.game.add.sprite(posX, posY, asset);
+
+
+    planet.width = 250;
+    planet.height = 250;
+
 	planet.gravityRadius = gravityRadius;
 	planet.gravityForce = gravityForce
 	this.planetGroup.add(planet);
@@ -219,6 +223,8 @@ startZoom:function(pointer){
     else {
         zoomAmount = 0.05;
     }
+    console.log(zoomAmount);
+
 },
 
 stopZoom:function(pointer){
