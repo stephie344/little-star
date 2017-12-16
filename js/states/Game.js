@@ -40,6 +40,7 @@ var zooming = false;
 var zoomAmount = 0;
 var cursors;
 var size = new Phaser.Rectangle();
+var points = 0;
 
 LittleStar.Game.prototype =
 {
@@ -94,6 +95,7 @@ LittleStar.Game.prototype =
         {
           zoom: Phaser.KeyCode.Z,
           jump: Phaser.KeyCode.SPACEBAR,
+          addpoints: Phaser.KeyCode.P,
         }
       );
     this.buttons.zoom.onDown.add(this.startZoom, this);
@@ -147,6 +149,8 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
         this.debug  = 'You last hit: The wall :)';
     }
 
+    this.buttons.addpoints.onDown.add(this.addPoints, this);
+
 },
   update: function()
   {
@@ -197,6 +201,26 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
 
 
     this.playerForceLeftRight = 0;
+    this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
+
+    if (points == 5) {
+      this.game.camera.scale.x = 15;
+      this.game.camera.scale.y = 15;
+      this.player.width = this.playerSize *10;
+      this.player.height = this.playerSize *10;
+    }
+    if (points == 10) {
+      this.game.camera.scale.x = 5;
+      this.game.camera.scale.y = 5;
+      this.player.width = this.playerSize *30;
+      this.player.height = this.playerSize *30;
+    }
+    if (points == 15) {
+      this.game.camera.scale.x = 1;
+      this.game.camera.scale.y = 1;
+      this.player.width = this.playerSize *100;
+      this.player.height = this.playerSize *100;
+    }
     this.game.world.rotation = -this.player.body.rotation;
   },
   setOnGround: function() {
@@ -315,4 +339,7 @@ stopZoom:function(pointer){
     zooming = false;
 },
 
+addPoints:function(pointer) {
+  points += 1;
+}
 };
