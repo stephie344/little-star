@@ -42,7 +42,7 @@ var zoomAmount = 0;
 var cursors;
 var size = new Phaser.Rectangle();
 var points = 0;
-var lastPoints = -1;
+var lastPoints = 0;
 
 LittleStar.Game.prototype =
 {
@@ -259,14 +259,14 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
 },
 spawneEnemies: function(){
 
-    this.enemyGroup.forEachAlive(
-    (member) =>
-    {
+/*this.enemyGroup.forEachAlive(
+  (member) =>
+  {
       member.kill();
-    }, this);
+  }, this);*/
 
-        for (var type = points/5; type <= points/5+1; type++) {
-            for (var i = 0; i < 20; i++) {
+        for (var type = 0; type < 5; type++) {
+            for (var i = 0; i < 10; i++) {
                 this.addEnemy(i+ type/5, type);
             }
         }
