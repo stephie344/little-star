@@ -19,6 +19,7 @@ LittleStar.Game = function (game)
   this.crateGroup;
   this.planetGroup;
 
+  this.player;
   this.playerForceLeftRight = 0;
   this.playerSpeed = 30;
   this.playerSize = 1;
@@ -99,6 +100,13 @@ LittleStar.Game.prototype =
     this.buttons.zoom.onDown.add(this.startZoom, this);
     this.buttons.zoom.onUp.add(this.stopZoom, this);
     size.setTo(-960, -600, 1920, 1200);
+
+    this.addCrate(0);
+    this.player.y;
+    this.player.x;
+    // camera: set to follow player (follow styles: https://phaser.io/examples/v2/camera/follow-styles)
+    this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
+
 },
   update: function()
   {
@@ -136,8 +144,8 @@ LittleStar.Game.prototype =
 
     this.crateGroup.forEachAlive(this.accelerateToObject,this, this.playerForceLeftRight, 80);
 
-    this.playerForceRight = 0;
-    this.playerForceLeft = 0;
+    this.playerForceLeftRight = 0;
+    this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
   },
 
   moveBullets: function(bullet) {
@@ -177,13 +185,15 @@ LittleStar.Game.prototype =
 addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
-    
+
     crateSprite.width = this.playerSize *5 + 5;
     crateSprite.height = this.playerSize *5 + 5;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	this.crateGroup.add(crateSprite);
 	this.game.physics.p2.enable(crateSprite);
+  this.player = crateSprite;
+
 },
 
 // function to add a planet
