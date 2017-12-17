@@ -33,13 +33,13 @@ LittleStar.Game = function (game)
 
   // score text
  this.LifeText;
+ this.crateSprite;
 
 };
 var zooming = false;
 var zoomAmount = 0;
 var cursors;
 var size = new Phaser.Rectangle();
-
 
 LittleStar.Game.prototype =
 {
@@ -179,6 +179,7 @@ LittleStar.Game.prototype =
                 this.points += 1;
                 body.sprite.kill();
                 this.sfx.sword.play();
+                crateSprite.loadTexture("player"+i, 0);
               } else {
 
                 // check for ongoing player tweens
@@ -346,6 +347,7 @@ LittleStar.Game.prototype =
 
             this.spawneEnemies();
             this.lastPoints = this.points;
+
           }
       }
     }
@@ -430,7 +432,7 @@ spawneEnemies: function(){
 // function to add a crate
 addCrate: function(e){
 
-	var crateSprite = this.game.add.sprite(0, -150, "player0");
+	crateSprite = this.game.add.sprite(0, -150, "player0");
 
   crateSprite.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
   crateSprite.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
