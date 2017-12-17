@@ -84,7 +84,7 @@ LittleStar.Game.prototype =
         this.playerSize = 2;
         this.playerBiggerThanEnemy = 3;
 
-        this.enemies = 14;
+        this.enemies = 15;
         this.jumpForce = 0;
 
         this.playerTweens = [];
@@ -182,7 +182,8 @@ LittleStar.Game.prototype =
           for (var i = 0; i < this.enemies; i++) {
             if (body.sprite.key == "enemy" + i) {
               if (this.points >= (i * 5)) {
-                this.points += 1;
+                this.addPoints();
+
                 body.sprite.kill();
                 this.sfx.eatenemy.play();
                 crateSprite.loadTexture("player"+i, 0);
@@ -223,6 +224,7 @@ LittleStar.Game.prototype =
                           this.playerTweens.splice(i, 1);
                         }
                       }
+                     this.player.alpha = 1;
                     this.game.tweens.remove(alphaTween);
                   }, this);
                 }
@@ -237,7 +239,7 @@ LittleStar.Game.prototype =
 
 
           this.LifeText.text = "Lives: " + this.life;
-          this.debug = 'lives: ' + this.life;
+          this.debug = 'lives: ' + this.life + ", points: " + this.points;
       }
       else
       {
@@ -430,7 +432,7 @@ spawneEnemies: function(){
     }, this);
 
         for (var type = this.points/5; type <= this.points/5+1; type++) {
-            for (var i = 0; i < 16 - (this.points/5); i++) {
+            for (var i = 0; i < 15 - type; i++) {
                 this.addEnemy(i+ type/5, type);
             }
         }
@@ -515,6 +517,12 @@ stopZoom:function(pointer){
 },
 
 addPoints:function(pointer) {
-  this.points += 1;
+ if(this.points / 5 >= 8 )
+     this.points += 5;
+ else if(this.points / 5 >= 4 )
+     this.points += 2.5;
+ else {
+     this.points += 1;
+ }
 }
 };
