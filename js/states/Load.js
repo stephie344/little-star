@@ -48,7 +48,7 @@ LittleStar.Load.prototype =
     //this.game.load.physics("physics", "assets/data.json");
 
     // audio
-    let music = this.load.audio('music', 'assets/audio/oedipus_wizball_highscore.mp3');// sfx
+    let music = this.load.audio('music', 'assets/audio/backgroundmusic.mp3');// sfx
     let ping = this.load.audio('ping', 'assets/audio/p-ping.mp3');
     let sword = this.load.audio('sword', 'assets/audio/sword.mp3');
     let jumpsound = this.load.audio('jumpsound', 'assets/audio/Sounds/jump_01.mp3');
