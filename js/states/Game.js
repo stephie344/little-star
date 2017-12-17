@@ -250,7 +250,7 @@ LittleStar.Game.prototype =
             }
           }
 
-          console.log(this.points);
+          //console.log(this.points);
           if(body.sprite.key == "erde")
               this.onGround = true;
 
@@ -281,7 +281,7 @@ LittleStar.Game.prototype =
     if (this.credits > 0) {
       this.credits -= deltaTime;
     }
-    console.log(this.endgame);
+    //console.log(this.endgame);
     if (this.credits <= 0 && this.endgame == true) {
       this.state.start('Credits');
     }
@@ -312,7 +312,7 @@ LittleStar.Game.prototype =
     }
     if (this.buttons.jump.isDown && (this.onGround))
     {
-        console.log("jump");
+        //console.log("jump");
         this.sfx.jumpsound.play();
         //this.player.body.velocity.y = -40;
         this.onGround = false;
@@ -386,7 +386,7 @@ LittleStar.Game.prototype =
 
             this.player.body.setCircle(this.player.width / 2);
 
-            console.log(this.game.camera.scale.x + " x " + this.game.camera.scale.y);
+            //console.log(this.game.camera.scale.x + " x " + this.game.camera.scale.y);
             this.LifeText.scale.setTo(20 / this.game.camera.scale.x - 1, 20 / this.game.camera.scale.y - 1);
             this.LifeText.position.x = 32;
             this.LifeText.position.y = 32;
@@ -560,7 +560,7 @@ startZoom:function(pointer){
     else {
         zoomAmount = 0.05;
     }
-    console.log(zoomAmount);
+    //console.log(zoomAmount);
 
 },
 

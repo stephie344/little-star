@@ -15,6 +15,9 @@ LittleStar.Credits.prototype =
     // this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
     // this.logo.anchor.setTo(0.5, 0.5);
 
+
+    this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
+
     // music (volume 1.0, loop: true)
     this.music = this.add.audio('music', 1.0, true);
     this.music.play();
