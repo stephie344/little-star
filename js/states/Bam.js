@@ -139,13 +139,13 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     //  The first argument may be null or not have a sprite property, such as when you hit the world bounds.
     if (body)
     {
-        this.debug = 'You last hit: ' + body.sprite.key;
+        //this.debug = 'You last hit: ' + body.sprite.key;
         if(body.sprite.key == "erde")
             this.onGround = true;
     }
     else
     {
-        this.debug  = 'You last hit: The wall :)';
+        //this.debug  = 'You last hit: The wall :)';
     }
 
     this.buttons.addpoints.onDown.add(this.addPoints, this);
