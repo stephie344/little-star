@@ -36,14 +36,13 @@ LittleStar.Bam = function (game)
   this.forceReducer = 0.005;
   this.timerCurrent = 0;
   this.timerTotal = 2;
-  this.durchlauf = 0;
 
 };
 var zooming = false;
 var zoomAmount = 0;
 var cursors;
 var size = new Phaser.Rectangle();
-var points = 0;
+var points = 10;
 var lastPoints = 0;
 var deltaTime=0;
 
@@ -55,6 +54,12 @@ LittleStar.Bam.prototype =
   },
   create: function ()
   {
+
+      this.durchlauf = 0;
+
+      points = 10;
+
+
       this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH / 2), -(LittleStar.SCREEN_HEIGHT / 2), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH), -(LittleStar.SCREEN_HEIGHT), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
@@ -186,7 +191,6 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
 
     deltaTime = this.game.time.elapsed/1000;
-    console.log(deltaTime);
 
     this.timerCurrent += deltaTime;
     if (this.durchlauf == 9) {
@@ -259,9 +263,9 @@ spawneEnemies: function(){
       member.kill();
   }, this);*/
 
-        for (var type = 0; type < 5; type++) {
-            for (var i = 0; i < 7; i++) {
-                this.addEnemy(i+ type/5 + this.durchlauf, type);
+        for (var type = this.durchlauf; type < 5 + this.durchlauf; type++) {
+            for (var i = 0; i < 5; i++) {
+                this.addEnemy(i+ type/5 + this.durchlauf / 3, type);
             }
         }
 
@@ -279,6 +283,14 @@ addCrate: function(e){
 	this.game.physics.p2.enable(crateSprite);
   this.player = crateSprite;
 
+
+
+    this.game.camera.scale.x = 15 - this.durchlauf * 2;
+    this.game.camera.scale.y = 15 - this.durchlauf * 2;
+    this.player.width = (points/5) * 4 + 1;
+    this.player.height = (points/5) * 4 + 1;
+    this.player.body.setCircle(this.player.width / 2);
+
 },
 
 // function to add a crate
@@ -294,8 +306,8 @@ addEnemy: function(angle, enemyType){
 
 	var enemy = this.game.add.sprite(x, y, texture);
 
-    enemy.width = enemyType * 4 + 1;
-    enemy.height = enemyType * 4 + 1;
+    enemy.width = enemyType * 3 + 1;
+    enemy.height = enemyType * 3 + 1;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(enemy);

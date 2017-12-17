@@ -21,14 +21,7 @@ LittleStar.Game = function (game)
   this.enemyGroup;
 
 
-  this.onGround = false;
-  this.player;
-  this.playerForceLeftRight = 0;
-  this.playerSpeed = 10;
-  this.playerSize = 2;
-  this.playerBiggerThanEnemy = 3;
 
-  this.enemies = 14;
 
   this.alien;
 
@@ -44,8 +37,7 @@ var zooming = false;
 var zoomAmount = 0;
 var cursors;
 var size = new Phaser.Rectangle();
-var points = 0;
-var lastPoints = -1;
+
 
 LittleStar.Game.prototype =
 {
@@ -55,6 +47,22 @@ LittleStar.Game.prototype =
   },
   create: function ()
   {
+      this.points = 0;
+      this.lastPoints = -1;
+
+        this.life = 500;
+        this.onGround = false;
+        this.player;
+        this.playerForceLeftRight = 0;
+        this.playerSpeed = 10;
+        this.playerSize = 2;
+        this.playerBiggerThanEnemy = 3;
+
+        this.enemies = 14;
+        this.jumpForce = 0;
+
+
+
       this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH / 2), -(LittleStar.SCREEN_HEIGHT / 2), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH), -(LittleStar.SCREEN_HEIGHT), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
@@ -87,7 +95,7 @@ LittleStar.Game.prototype =
         this.addPlanet(0, 0, 400, 250, "erde");
 
 		// waiting for player input
-		this.input.onDown.add(this.addCrate, this);
+		//this.input.onDown.add(this.addCrate, this);
     this.cursors = this.input.keyboard.createCursorKeys();
 
         // buttons
@@ -96,6 +104,7 @@ LittleStar.Game.prototype =
           zoom: Phaser.KeyCode.Z,
           jump: Phaser.KeyCode.SPACEBAR,
           addpoints: Phaser.KeyCode.P,
+          die: Phaser.KeyCode.D,
         }
       );
     this.buttons.zoom.onDown.add(this.startZoom, this);
@@ -103,11 +112,14 @@ LittleStar.Game.prototype =
     size.setTo(-960, -600, 1920, 1200);
 
     this.addCrate(0);
-    this.player.y;
-    this.player.x;
+    //this.player.y;
+    //this.player.x;
     // camera: set to follow player (follow styles: https://phaser.io/examples/v2/camera/follow-styles)
     this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
 
+
+  this.game.camera.scale.x = 24;
+  this.game.camera.scale.y = 24;
 
     //this.game.camera.scale.x = 40;
     //this.game.camera.scale.y = 40;
@@ -134,22 +146,26 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     //  The first argument may be null or not have a sprite property, such as when you hit the world bounds.
     if (body)
     {
-        this.debug = 'You last hit: ' + body.sprite.key;
         for (var i = 0; i < this.enemies; i++) {
           if (body.sprite.key == "enemy" + i) {
-            if (points >= (i * 5)) {
-              points += 1;
+            if (this.points >= (i * 5)) {
+              this.points += 1;
               body.sprite.kill();
             } else {
-              this.debug = 'you are dead';
-              this.state.start('Bam');
+
+              this.life --;
+              if(this.life == 0)
+                this.state.start('Bam');
             }
           }
         }
 
-        console.log(points);
+        console.log(this.points);
         if(body.sprite.key == "erde")
             this.onGround = true;
+
+
+        this.debug = 'lives: ' + this.life;
     }
     else
     {
@@ -157,10 +173,25 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     }
 
     this.buttons.addpoints.onDown.add(this.addPoints, this);
+    this.buttons.die.onDown.add(()=>{ this.life = 0; }, this);
 
 },
   update: function()
   {
+
+    if(this.life <= 0)
+      this.state.start('Bam');
+
+    deltaTime = this.game.time.elapsed/1000;
+    this.timerCurrent += deltaTime;
+
+    if(this.jumpForce > 0)
+    {
+        this.jumpForce -= deltaTime * 100;
+        if(this.jumpForce < 0)
+            this.jumpForce = 0;
+    }
+
 
      //this.player.body.setZeroVelocity();
     if (this.cursors.up.isDown)
@@ -182,8 +213,27 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     if (this.buttons.jump.isDown && (this.onGround))
     {
         console.log("jump");
-        this.player.body.velocity.y = -40;
+        //this.player.body.velocity.y = -40;
         this.onGround = false;
+        this.jumpForce = 86 + (this.points / 5);
+
+        this.planetGroup.forEachAlive(
+          (member) =>
+          {
+            var angle = Math.atan2(member.y - this.player.y, member.x - this.player.x);
+            //obj1.body.rotation = angle + this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
+             //this.player.body.force.x = Math.cos(angle) * 100;    // accelerateToObject
+             //this.player.body.force.y = Math.sin(angle) * 100;
+
+             /*var mass = .1;
+             var time = 1;
+            let impulse = [	(mass * this.player.body.velocity.x) * time,
+              ((mass * 2) * time) // using a static velocity of 2 for a "punch" multiply buy the time the user stays pressing the key
+            ];
+
+            this.player.body.applyImpulse(impulse,this.player.x,this.player.y);*/
+
+          }, this)
     }
 
 
@@ -208,18 +258,20 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
     this.playerForceLeftRight = 0;
     this.game.world.rotation = -this.player.body.rotation - this.game.math.degToRad(180);
 
+
     for (var i = 0; i < this.enemies; i++) {
-        if(lastPoints != points)
+        if(this.lastPoints != this.points)
         {
-          if (points == i*5) {
-            this.game.camera.scale.x = 24 - (23 * i / (this.enemies - 1));
-            this.game.camera.scale.y = 24 - (23 * i / (this.enemies - 1));
-            this.player.width = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
-            this.player.height = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
+          if (this.points == i*5) {
+              console.log("geh do eine olta");
+            this.game.camera.scale.x = 18.2 - (17 * i / (this.enemies - 1));
+            this.game.camera.scale.y = 18.2 - (17 * i / (this.enemies - 1));
+            this.player.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
+            this.player.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
             this.player.body.setCircle(this.player.width / 2);
 
             this.spawneEnemies();
-            lastPoints = points;
+            this.lastPoints = this.points;
           }
       }
     }
@@ -232,23 +284,30 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
   },
 
   moveEnemy: function(bullet, forceLeftRight, speed) {
-       this.accelerateToObject(bullet, 0, speed);  //start accelerateToObject on every bullet
+       this.accelerateToObject(bullet, 0, speed, false);  //start accelerateToObject on every bullet
   },
 
   movePlayer: function(bullet, forceLeftRight, speed) {
-       this.accelerateToObject(bullet, this.playerForceLeftRight, speed);  //start accelerateToObject on every bullet
+       this.accelerateToObject(bullet, this.playerForceLeftRight, speed, true);  //start accelerateToObject on every bullet
   },
 
-  accelerateToObject: function(obj1, forceLeftRight, speed) {
+  accelerateToObject: function(obj1, forceLeftRight, speed, player) {
       if (typeof speed === 'undefined') { speed = 30; }
-
+      var forceLRcos = 0;
+      var forceLRsin = 0;
         this.planetGroup.forEachAlive(
           (member) =>
           {
             var angle = Math.atan2(member.y - obj1.y, member.x - obj1.x);
+            if(player)
+            {
             obj1.body.rotation = angle - this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
-            obj1.body.force.x = Math.cos(angle) * speed + Math.cos(obj1.body.rotation) * forceLeftRight;    // accelerateToObject
-            obj1.body.force.y = Math.sin(angle) * speed + Math.sin(obj1.body.rotation) * forceLeftRight;
+                speed =  (speed - this.jumpForce);
+                forceLRcos = Math.cos(obj1.body.rotation) * (forceLeftRight * (this.points / 25 + 1));
+                forceLRsin = Math.sin(obj1.body.rotation) * (forceLeftRight * (this.points / 25 + 1));
+            }
+            obj1.body.force.x = Math.cos(angle) * speed + forceLRcos;    // accelerateToObject
+            obj1.body.force.y = Math.sin(angle) * speed + forceLRsin;
           }, this)
 
   },
@@ -278,8 +337,8 @@ spawneEnemies: function(){
       member.kill();
     }, this);
 
-        for (var type = points/5; type <= points/5+1; type++) {
-            for (var i = 0; i < 16 - (points/5); i++) {
+        for (var type = this.points/5; type <= this.points/5+1; type++) {
+            for (var i = 0; i < 16 - (this.points/5); i++) {
                 this.addEnemy(i+ type/5, type);
             }
         }
@@ -290,8 +349,8 @@ addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
 
-    crateSprite.width = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
-    crateSprite.height = (points/5) * this.playerSize + this.playerBiggerThanEnemy;
+    crateSprite.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
+    crateSprite.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(crateSprite);
@@ -313,8 +372,11 @@ addEnemy: function(angle, enemyType){
 
 	var enemy = this.game.add.sprite(x, y, texture);
 
-    enemy.width = enemyType * this.playerSize + 1;
-    enemy.height = enemyType * this.playerSize + 1;
+    var w = enemy.width;
+    var h = enemy.height;
+
+    enemy.height = enemyType * (this.playerSize *.97) + 1;
+    enemy.width = enemy.height * (w / h);
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(enemy);
@@ -360,6 +422,6 @@ stopZoom:function(pointer){
 },
 
 addPoints:function(pointer) {
-  points += 1;
+  this.points += 1;
 }
 };

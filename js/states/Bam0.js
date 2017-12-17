@@ -25,7 +25,7 @@ LittleStar.Bam = function (game)
   this.player;
   this.playerForceLeftRight = 0;
   this.playerSpeed = 10;
-  this.playerSize = 1;
+  this.playerSize = 5;
 
   this.alien;
 
@@ -43,7 +43,7 @@ var zooming = false;
 var zoomAmount = 0;
 var cursors;
 var size = new Phaser.Rectangle();
-var points = 0;
+var points = 20;
 var lastPoints = 0;
 var deltaTime=0;
 
@@ -55,6 +55,16 @@ LittleStar.Bam.prototype =
   },
   create: function ()
   {
+
+        this.points = 20;
+
+
+        this.game.camera.scale.x = 15 - this.durchlauf * 2;
+        this.game.camera.scale.y = 15 - this.durchlauf * 2;
+        this.player.width = (points/5) * 4 + 1;
+        this.player.height = (points/5) * 4 + 1;
+        this.player.body.setCircle(this.player.width / 2);
+
       this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH / 2), -(LittleStar.SCREEN_HEIGHT / 2), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH), -(LittleStar.SCREEN_HEIGHT), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
       //this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
