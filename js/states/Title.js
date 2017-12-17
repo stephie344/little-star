@@ -37,15 +37,11 @@ LittleStar.Title.prototype =
       });
     text.anchor.set(0.5, 0.5);
 
-    // sfx
-    this.sfx =
-    {
-      intro: this.add.audio('intro'),
-    };
+    this.game.add.sprite(0, 0, "menu");
+
   },
   update: function()
   {
-      this.sfx.intro.play();
     //this.logo.rotation += 0.01;
 
     // if menuButton is pressed start Game state

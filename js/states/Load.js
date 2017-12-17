@@ -29,6 +29,8 @@ LittleStar.Load.prototype =
   	this.load.image("planet", "assets/sprites/planet.png");
   	this.load.image("bigplanet", "assets/sprites/bigplanet.png");
 
+    this.load.image("menu", "assets/sprites/menu_small.png");
+    this.load.image("credits", "assets/sprites/credits_small.png");
   	this.load.image("platform", "assets/sprites/platform.png");
     this.load.image("erde", "assets/sprites/erde.png");
     this.load.image("player", "assets/sprites/player/p.png");
