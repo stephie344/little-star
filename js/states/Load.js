@@ -34,9 +34,12 @@ LittleStar.Load.prototype =
   	this.load.image("platform", "assets/sprites/platform.png");
     this.load.image("erde", "assets/sprites/erde.png");
     this.load.image("player", "assets/sprites/player/p.png");
-    for(var i = 0; i < 14; i++)
+    for(var i = 0; i <= 15; i++)
     {
         this.load.image("player"+i, "assets/sprites/player/p"+i+".png");
+    }
+    for(var i = 0; i < 15; i++)
+    {
         this.load.image("enemy"+i, "assets/sprites/enemies/e"+i+".png");
     }
 
