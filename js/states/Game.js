@@ -258,7 +258,7 @@ LittleStar.Game.prototype =
       }
       else
       {
-          this.debug  = 'You last hit: The wall :)';
+          //this.debug  = 'You last hit: The wall :)';
       }
 
       this.buttons.addpoints.onDown.add(this.addPoints, this);
@@ -510,7 +510,7 @@ addEnemy: function(angle, enemyType){
   enemy.height = enemyType * (this.playerSize *.97) + 1;
 
   if(enemyType == this.enemies - 1)
-      enemy.height = 30 * (this.playerSize *.97) + 1;
+      enemy.height = 35 * (this.playerSize *.97) + 1;
 
   enemy.width = enemy.height * (w / h);
 
