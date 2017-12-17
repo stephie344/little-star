@@ -6,6 +6,9 @@ let LittleStar = {};
 LittleStar.SCREEN_WIDTH = 800;
 LittleStar.SCREEN_HEIGHT = 600;
 
+// debug
+LittleStar.DEBUG = false;
+
 // phyics systems
 LittleStar.PHYSICS_NONE = 0;
 LittleStar.PHYSICS_ARCADE = 1;

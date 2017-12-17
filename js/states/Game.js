@@ -20,9 +20,6 @@ LittleStar.Game = function (game)
   this.planetGroup;
   this.enemyGroup;
 
-
-
-
   this.alien;
 
   this.buttons;
@@ -31,6 +28,11 @@ LittleStar.Game = function (game)
 
   this.forceReducer = 0.005;
 
+  this.music;
+  this.sfx;
+
+  // score text
+ this.LifeText;
 
 };
 var zooming = false;
@@ -41,16 +43,34 @@ var size = new Phaser.Rectangle();
 
 LittleStar.Game.prototype =
 {
-  preload: function ()
-  {
-      this.physics.startSystem(Phaser.Physics.P2JS);
-  },
-  create: function ()
-  {
-      this.points = 0;
-      this.lastPoints = -1;
+    preload: function ()
+    {
+        this.physics.startSystem(Phaser.Physics.P2JS);
+    },
+    create: function ()
+    {
+
+        // audio
+        // music (volume 1.0, loop: true)
+        this.music = this.add.audio('music', 1.0, true);
+        this.music.play();
+        // sfx
+        this.sfx =
+        {
+          ping: this.add.audio('ping'),
+          sword: this.add.audio('sword')
+        };
+
+        this.points = 0;
+        this.lastPoints = -1;
 
         this.life = 500;
+        // life text (fixed to camera)
+        let lifePos = {x: 32, y:  32};
+        this.LifeText = this.add.text(lifePos.x, lifePos.y, "Lives: " + this.life, { font: "32px Arial", fill: "#FFFFFF", align: "left" });
+        this.LifeText.fixedToCamera = true;
+        this.LifeText.visible = false;
+
         this.onGround = false;
         this.player;
         this.playerForceLeftRight = 0;
@@ -61,126 +81,174 @@ LittleStar.Game.prototype =
         this.enemies = 14;
         this.jumpForce = 0;
 
+        this.playerTweens = [];
 
+        this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH / 2), -(LittleStar.SCREEN_HEIGHT / 2), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
+        //this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH), -(LittleStar.SCREEN_HEIGHT), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
+        //this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
+        // adding groups
 
-      this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH / 2), -(LittleStar.SCREEN_HEIGHT / 2), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
-      //this.game.world.setBounds(-(LittleStar.SCREEN_WIDTH), -(LittleStar.SCREEN_HEIGHT), (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
-      //this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
-      // adding groups
-
-  		this.crateGroup = this.game.add.group();
-  		this.planetGroup = this.game.add.group();
+    		this.crateGroup = this.game.add.group();
+    		this.planetGroup = this.game.add.group();
         this.bullets = this.game.add.group();
         this.enemyGroup = this.game.add.group();
 
-        this.debugGroups = [this.crateGroup, this.planetGroup, this.bullets];
 
-		// adding graphic objects
+        this.debugGroups = [this.crateGroup, this.planetGroup, this.bullets, this.enemyGroup];
 
-		gravityGraphics = this.add.graphics(0, 0);
-    	gravityGraphics.lineStyle(2,0xffffff,0.5);
+    		// adding graphic objects
 
-		// stage setup
+    		gravityGraphics = this.add.graphics(0, 0);
+      	gravityGraphics.lineStyle(2,0xffffff,0.5);
 
-		this.stage.backgroundColor = "#222222";
+    		// stage setup
+
+    		this.stage.backgroundColor = "#222222";
+
+        // physics setup
+        //this.game.physics.p2.restitution = 0.9;
+
 
         //this.game.physics.p2.enable(ship);
         //ship.body.static = true;
-		// adding a couple of planets. Arguments are:
-		// x position
-		// y position
-		// gravity radius
-		// gravity force
-		// graphic asset
+    		// adding a couple of planets. Arguments are:
+    		// x position
+    		// y position
+    		// gravity radius
+    		// gravity force
+    		// graphic asset
         this.addPlanet(0, 0, 400, 250, "erde");
 
-		// waiting for player input
-		//this.input.onDown.add(this.addCrate, this);
-    this.cursors = this.input.keyboard.createCursorKeys();
+    		// waiting for player input
+    		//this.input.onDown.add(this.addCrate, this);
+        this.cursors = this.input.keyboard.createCursorKeys();
 
-        // buttons
-    this.buttons = this.input.keyboard.addKeys(
-        {
-          zoom: Phaser.KeyCode.Z,
-          jump: Phaser.KeyCode.SPACEBAR,
-          addpoints: Phaser.KeyCode.P,
-          die: Phaser.KeyCode.D,
-        }
-      );
-    this.buttons.zoom.onDown.add(this.startZoom, this);
-    this.buttons.zoom.onUp.add(this.stopZoom, this);
-    size.setTo(-960, -600, 1920, 1200);
+            // buttons
+        this.buttons = this.input.keyboard.addKeys(
+            {
+              zoom: Phaser.KeyCode.Z,
+              jump: Phaser.KeyCode.SPACEBAR,
+              addpoints: Phaser.KeyCode.P,
+              die: Phaser.KeyCode.D,
+            }
+          );
+        this.buttons.zoom.onDown.add(this.startZoom, this);
+        this.buttons.zoom.onUp.add(this.stopZoom, this);
+        size.setTo(-960, -600, 1920, 1200);
 
-    this.addCrate(0);
-    //this.player.y;
-    //this.player.x;
-    // camera: set to follow player (follow styles: https://phaser.io/examples/v2/camera/follow-styles)
-    this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
-
-
-  this.game.camera.scale.x = 24;
-  this.game.camera.scale.y = 24;
-
-    //this.game.camera.scale.x = 40;
-    //this.game.camera.scale.y = 40;
+        // add player
+        this.addCrate(0);
+        //this.player.y;
+        //this.player.x;
+        // camera: set to follow player (follow styles: https://phaser.io/examples/v2/camera/follow-styles)
+        this.camera.follow(this.player, Phaser.Camera.FOLLOW_PLATFORMER);
 
 
-    //this.player.body.collides(this.planetGroup, this.setOnGround, this);
+        this.game.camera.scale.x = 24;
+        this.game.camera.scale.y = 24;
 
-    this.player.body.onBeginContact.add(this.blockHit, this);
+        //this.game.camera.scale.x = 40;
+        //this.game.camera.scale.y = 40;
 
-},
+        //this.player.body.collides(this.planetGroup, this.setOnGround, this);
 
-blockHit: function(body, bodyB, shapeA, shapeB, equation) {
+        this.player.body.onBeginContact.add(this.blockHit, this);
 
-    //  The block hit something.
-    //
-    //  This callback is sent 5 arguments:
-    //
-    //  The Phaser.Physics.P2.Body it is in contact with. *This might be null* if the Body was created directly in the p2 world.
-    //  The p2.Body this Body is in contact with.
-    //  The Shape from this body that caused the contact.
-    //  The Shape from the contact body.
-    //  The Contact Equation data array.
-    //
-    //  The first argument may be null or not have a sprite property, such as when you hit the world bounds.
-    if (body)
-    {
-        for (var i = 0; i < this.enemies; i++) {
-          if (body.sprite.key == "enemy" + i) {
-            if (this.points >= (i * 5)) {
-              this.points += 1;
-              body.sprite.kill();
-            } else {
 
-              this.life --;
-              if(this.life == 0)
-                this.state.start('Bam');
+
+  },
+
+  blockHit: function(body, bodyB, shapeA, shapeB, equation) {
+
+      //  The block hit something.
+      //
+      //  This callback is sent 5 arguments:
+      //
+      //  The Phaser.Physics.P2.Body it is in contact with. *This might be null* if the Body was created directly in the p2 world.
+      //  The p2.Body this Body is in contact with.
+      //  The Shape from this body that caused the contact.
+      //  The Shape from the contact body.
+      //  The Contact Equation data array.
+      //
+      //  The first argument may be null or not have a sprite property, such as when you hit the world bounds.
+      if (body)
+      {
+          for (var i = 0; i < this.enemies; i++) {
+            if (body.sprite.key == "enemy" + i) {
+              if (this.points >= (i * 5)) {
+                this.points += 1;
+                body.sprite.kill();
+                this.sfx.sword.play();
+              } else {
+
+                // check for ongoing player tweens
+                var loseLife = true;
+                for (var i = 0; i < this.playerTweens.length; i++)
+                {
+                  // player immunity for tween period
+                  //console.log("Immunity!");
+                  if (this.playerTweens[i].isRunning) loseLife = false;
+                }
+
+                if (loseLife)
+                {
+                  this.life --;
+                  this.sfx.ping.play();
+                }
+                // if(this.life == 0)
+                //   this.state.start('Bam');
+
+                // hittween
+                if (this.life != 0)
+                {
+                  // create new tween {properties}, duration, easing function, autostart, delay, repeat_number, yoyo
+                  var alphaTween = this.game.add.tween(this.player).to( { alpha: 0.2, tint: 0xff0000 }, 100, Phaser.Easing.Linear.None, true, 0, 10, true);
+                  this.playerTweens.push(alphaTween); // keep reference for destroying
+                  // tween removal after completion
+                  alphaTween.onComplete.add(
+                  () =>
+                  {
+                    for (let i=0;i<this.playerTweens.length;i++)
+                      {
+                        if (this.playerTweens[i] == alphaTween)
+                        {
+                          //console.log("removing Tween" + i);
+                          this.playerTweens.splice(i, 1);
+                        }
+                      }
+                    this.game.tweens.remove(alphaTween);
+                  }, this);
+                }
+
+              }
             }
           }
-        }
 
-        console.log(this.points);
-        if(body.sprite.key == "erde")
-            this.onGround = true;
+          console.log(this.points);
+          if(body.sprite.key == "erde")
+              this.onGround = true;
 
 
-        this.debug = 'lives: ' + this.life;
-    }
-    else
-    {
-        this.debug  = 'You last hit: The wall :)';
-    }
+          this.LifeText.text = "Lives: " + this.life;
+          this.debug = 'lives: ' + this.life;
+      }
+      else
+      {
+          this.debug  = 'You last hit: The wall :)';
+      }
 
-    this.buttons.addpoints.onDown.add(this.addPoints, this);
-    this.buttons.die.onDown.add(()=>{ this.life = 0; }, this);
+      this.buttons.addpoints.onDown.add(this.addPoints, this);
+      this.buttons.die.onDown.add(()=>{ this.life = 0; }, this);
 
-},
+  },
   update: function()
   {
 
     if(this.life <= 0)
-      this.state.start('Bam');
+    {
+        this.game.sound.stopAll();
+        this.state.start('Bam');
+    }
 
     deltaTime = this.game.time.elapsed/1000;
     this.timerCurrent += deltaTime;
@@ -263,12 +331,18 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
         if(this.lastPoints != this.points)
         {
           if (this.points == i*5) {
-              console.log("geh do eine olta");
             this.game.camera.scale.x = 18.2 - (17 * i / (this.enemies - 1));
             this.game.camera.scale.y = 18.2 - (17 * i / (this.enemies - 1));
             this.player.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
             this.player.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
             this.player.body.setCircle(this.player.width / 2);
+
+            console.log(this.game.camera.scale.x + " x " + this.game.camera.scale.y);
+            this.LifeText.scale.setTo(20 / this.game.camera.scale.x - 1, 20 / this.game.camera.scale.y - 1);
+            this.LifeText.position.x = 32;
+            this.LifeText.position.y = 32;
+
+            this.LifeText.rotation = -this.game.world.rotation;
 
             this.spawneEnemies();
             this.lastPoints = this.points;
@@ -314,20 +388,29 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
   render: function()
   {
 
+        // for now always show debug text
+        this.game.debug.text(this.debug, 32, 32);
+
+        if (!LittleStar.DEBUG) return;
+
+        this.player.body.debug = true;
+
         // Debug: highlights all members of all groups
         for (let i = 0; i < this.debugGroups.length; i++)
         {
-      this.debugGroups[i].forEachAlive(
-        (member) =>
-        {
+          this.debugGroups[i].forEachAlive(
+            (member) =>
+            {
               //this.game.debug.spriteBounds(member);
-              this.game.debug.body(member);
-              //member.body.debug = true;
+              //this.game.debug.body(member);
 
-        }, this);
+              member.body.debug = true;
+
+            }, this);
     }
 
-    this.game.debug.text(this.debug, 32, 32);
+
+    //this.game.debug.text(this.debug, 32, LittleStar.SCREEN_HEIGHT*0.95);
 },
 spawneEnemies: function(){
 
@@ -349,8 +432,8 @@ addCrate: function(e){
 
 	var crateSprite = this.game.add.sprite(0, -150, "player0");
 
-    crateSprite.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
-    crateSprite.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
+  crateSprite.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
+  crateSprite.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(crateSprite);
@@ -362,26 +445,27 @@ addCrate: function(e){
 // function to add a crate
 addEnemy: function(angle, enemyType){
 
-    var radius = 150;
+  var radius = 150;
 
-    var x = radius * Math.sin(angle); //this.game.world.rotation + 45);
-    var y = radius * Math.cos(angle); //this.game.world.rotation + 45);
+  var x = radius * Math.sin(angle); //this.game.world.rotation + 45);
+  var y = radius * Math.cos(angle); //this.game.world.rotation + 45);
 
-    var texture = "enemy" + enemyType;
+  var texture = "enemy" + enemyType;
 
 
-	var enemy = this.game.add.sprite(x, y, texture);
+   var enemy = this.game.add.sprite(x, y, texture);
 
-    var w = enemy.width;
-    var h = enemy.height;
+  var w = enemy.width;
+  var h = enemy.height;
 
-    enemy.height = enemyType * (this.playerSize *.97) + 1;
-    enemy.width = enemy.height * (w / h);
+  enemy.height = enemyType * (this.playerSize *.97) + 1;
+  enemy.width = enemy.height * (w / h);
 
-    //var crateSprite = this.game.add.sprite(x, y, "crate");
-	//this.crateGroup.add(enemy);
-    this.enemyGroup.add(enemy)
-	this.game.physics.p2.enable(enemy);
+  //var crateSprite = this.game.add.sprite(x, y, "crate");
+  //this.crateGroup.add(enemy);
+  this.enemyGroup.add(enemy);
+  this.game.physics.p2.enable(enemy);
+  //enemy.body.fixedRotation = true; // disable collisions rotating character
 
 },
 
@@ -391,8 +475,8 @@ addPlanet: function(posX, posY, gravityRadius, gravityForce, asset){
 	var planet = this.game.add.sprite(posX, posY, asset);
 
 
-    planet.width = 250;
-    planet.height = 250;
+  planet.width = 250;
+  planet.height = 250;
 
 	planet.gravityRadius = gravityRadius;
 	planet.gravityForce = gravityForce

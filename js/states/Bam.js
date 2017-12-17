@@ -1,4 +1,4 @@
-
+3
 LittleStar.Bam = function (game)
 {
   /* members */
@@ -194,7 +194,7 @@ blockHit: function(body, bodyB, shapeA, shapeB, equation) {
 
     this.timerCurrent += deltaTime;
     if (this.durchlauf == 9) {
-      this.state.start('Game');
+      this.state.start('Title');
     }
     if(this.timerCurrent >= this.timerTotal) {
         //do timer action
@@ -306,8 +306,13 @@ addEnemy: function(angle, enemyType){
 
 	var enemy = this.game.add.sprite(x, y, texture);
 
-    enemy.width = enemyType * 3 + 1;
+    var w = enemy.width;
+    var h = enemy.height;
+
+    //enemy.width = enemyType * 3 + 1;
+    //enemy.height = enemyType * 3 + 1;
     enemy.height = enemyType * 3 + 1;
+    enemy.width = enemy.height * (w / h);
 
     //var crateSprite = this.game.add.sprite(x, y, "crate");
 	//this.crateGroup.add(enemy);
