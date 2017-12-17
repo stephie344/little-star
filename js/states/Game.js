@@ -379,7 +379,7 @@ LittleStar.Game.prototype =
             {
                 this.player.width = 120;
                 this.player.height = 120;
-                this.credits = 0.1;
+                this.credits = 5;
                 this.endgame = true;
             }
 
