@@ -31,7 +31,7 @@ LittleStar.Load.prototype =
 
   	this.load.image("platform", "assets/sprites/platform.png");
     this.load.image("erde", "assets/sprites/erde.png");
-
+    this.load.image("player", "assets/sprites/player/p.png");
     for(var i = 0; i < 14; i++)
     {
         this.load.image("player"+i, "assets/sprites/player/p"+i+".png");
@@ -49,6 +49,12 @@ LittleStar.Load.prototype =
     let music = this.load.audio('music', 'assets/audio/oedipus_wizball_highscore.mp3');// sfx
     let ping = this.load.audio('ping', 'assets/audio/p-ping.mp3');
     let sword = this.load.audio('sword', 'assets/audio/sword.mp3');
+    let jumpsound = this.load.audio('jumpsound', 'assets/audio/Sounds/jump_01.mp3');
+    let bigjumpsound = this.load.audio('bigjumpsound', 'assets/audio/Sounds/weeee.mp3');
+    let intro = this.load.audio('intro', 'assets/audio/Sounds/von_himmel.mp3');
+    let dead = this.load.audio('dead', 'assets/audio/Sounds/neeeein.mp3');
+    let winner = this.load.audio('winner', 'assets/audio/Sounds/satt.mp3');
+    let eatenemy = this.load.audio('eatenemy', 'assets/audio/Sounds/nom_yery_short.mp3');
 
     // All used keys to be able to wait for sound file decoding (see create)
     // INFO: here we use 'load' to add audio to the Phaser Cache,

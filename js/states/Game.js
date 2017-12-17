@@ -58,7 +58,13 @@ LittleStar.Game.prototype =
         this.sfx =
         {
           ping: this.add.audio('ping'),
-          sword: this.add.audio('sword')
+          sword: this.add.audio('sword'),
+          eatenemy: this.add.audio('eatenemy'),
+          jumpsound: this.add.audio('jumpsound'),
+          intro: this.add.audio('intro'),
+          dead: this.add.audio('dead'),
+          winner: this.add.audio('winner'),
+          bigjump: this.add.audio('bigjump'),
         };
 
         this.points = 0;
@@ -178,7 +184,7 @@ LittleStar.Game.prototype =
               if (this.points >= (i * 5)) {
                 this.points += 1;
                 body.sprite.kill();
-                this.sfx.sword.play();
+                this.sfx.eatenemy.play();
                 crateSprite.loadTexture("player"+i, 0);
               } else {
 
@@ -194,7 +200,7 @@ LittleStar.Game.prototype =
                 if (loseLife)
                 {
                   this.life --;
-                  this.sfx.ping.play();
+                  this.sfx.dead.play();
                 }
                 // if(this.life == 0)
                 //   this.state.start('Bam');
@@ -203,7 +209,7 @@ LittleStar.Game.prototype =
                 if (this.life != 0)
                 {
                   // create new tween {properties}, duration, easing function, autostart, delay, repeat_number, yoyo
-                  var alphaTween = this.game.add.tween(this.player).to( { alpha: 0.2, tint: 0xff0000 }, 100, Phaser.Easing.Linear.None, true, 0, 10, true);
+                  var alphaTween = this.game.add.tween(this.player).to( { alpha: 0.2}, 100, Phaser.Easing.Linear.None, true, 0, 10, true);
                   this.playerTweens.push(alphaTween); // keep reference for destroying
                   // tween removal after completion
                   alphaTween.onComplete.add(
@@ -282,6 +288,7 @@ LittleStar.Game.prototype =
     if (this.buttons.jump.isDown && (this.onGround))
     {
         console.log("jump");
+        this.sfx.jumpsound.play();
         //this.player.body.velocity.y = -40;
         this.onGround = false;
         this.jumpForce = 86 + (this.points / 5);
@@ -375,9 +382,9 @@ LittleStar.Game.prototype =
           (member) =>
           {
             var angle = Math.atan2(member.y - obj1.y, member.x - obj1.x);
+            obj1.body.rotation = angle - this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
             if(player)
             {
-            obj1.body.rotation = angle - this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
                 speed =  (speed - this.jumpForce);
                 forceLRcos = Math.cos(obj1.body.rotation) * (forceLeftRight * (this.points / 25 + 1));
                 forceLRsin = Math.sin(obj1.body.rotation) * (forceLeftRight * (this.points / 25 + 1));
@@ -432,7 +439,7 @@ spawneEnemies: function(){
 // function to add a crate
 addCrate: function(e){
 
-	crateSprite = this.game.add.sprite(0, -150, "player0");
+	crateSprite = this.game.add.sprite(0, -150, "player");
 
   crateSprite.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
   crateSprite.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
