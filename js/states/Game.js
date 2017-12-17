@@ -69,7 +69,8 @@ LittleStar.Game.prototype =
 
         this.points = 0;
         this.lastPoints = -1;
-
+        this.credits = 0;
+        this.endgame = false;
         this.life = 25;
         // life text (fixed to camera)
         let lifePos = {x: 32, y:  32};
@@ -276,7 +277,12 @@ LittleStar.Game.prototype =
 
     deltaTime = this.game.time.elapsed/1000;
     this.timerCurrent += deltaTime;
-
+    if (this.credits > 0) {
+      this.credits -= deltaTime;
+    }
+    if (this.credits <= 0 && this.endgame = true) {
+      this.state.start('Credits');
+    }
     if(this.jumpForce > 0)
     {
         this.jumpForce -= deltaTime * 100;
@@ -371,6 +377,8 @@ LittleStar.Game.prototype =
             {
                 this.player.width = 120;
                 this.player.height = 120;
+                this.credits = 0.1;
+                this.endgame = true;
             }
 
 
