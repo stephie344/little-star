@@ -11,6 +11,7 @@ LittleStar.Title.prototype =
 {
   create: function()
   {
+    this.game.world.setBounds(0, 0, (LittleStar.SCREEN_WIDTH), (LittleStar.SCREEN_HEIGHT));
     // game logo
     // this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
     // this.logo.anchor.setTo(0.5, 0.5);

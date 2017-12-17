@@ -54,6 +54,7 @@ LittleStar.Game.prototype =
         // music (volume 1.0, loop: true)
         this.music = this.add.audio('music', 1.0, true);
         this.music.play();
+        this.debug = "";
         // sfx
         this.sfx =
         {
