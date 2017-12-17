@@ -54,7 +54,7 @@ LittleStar.Bam.prototype =
   },
   create: function ()
   {
-
+      this.debug = "";
       this.durchlauf = 0;
 
       points = 10;
