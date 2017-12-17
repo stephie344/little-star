@@ -1,4 +1,4 @@
-LittleStar.Title = function(game)
+LittleStar.Credits = function(game)
 {
   this.logo;
   this.menuButton;

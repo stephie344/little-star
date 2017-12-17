@@ -280,7 +280,8 @@ LittleStar.Game.prototype =
     if (this.credits > 0) {
       this.credits -= deltaTime;
     }
-    if (this.credits <= 0 && this.endgame = true) {
+    console.log(this.endgame);
+    if (this.credits <= 0 && this.endgame == true) {
       this.state.start('Credits');
     }
     if(this.jumpForce > 0)
@@ -373,7 +374,7 @@ LittleStar.Game.prototype =
                 this.player.width = 80;
                 this.player.height = 80;
             }
-            else if(this.points == 75)
+            else if(this.points >= 75)
             {
                 this.player.width = 120;
                 this.player.height = 120;
