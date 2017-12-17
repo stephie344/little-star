@@ -70,7 +70,7 @@ LittleStar.Game.prototype =
         this.points = 0;
         this.lastPoints = -1;
 
-        this.life = 500;
+        this.life = 25;
         // life text (fixed to camera)
         let lifePos = {x: 32, y:  32};
         this.LifeText = this.add.text(lifePos.x, lifePos.y, "Lives: " + this.life, { font: "32px Arial", fill: "#FFFFFF", align: "left" });
@@ -84,7 +84,7 @@ LittleStar.Game.prototype =
         this.playerSize = 2;
         this.playerBiggerThanEnemy = 3;
 
-        this.enemies = 15;
+        this.enemies = 16;
         this.jumpForce = 0;
 
         this.playerTweens = [];
@@ -179,6 +179,21 @@ LittleStar.Game.prototype =
       //  The first argument may be null or not have a sprite property, such as when you hit the world bounds.
       if (body)
       {
+
+          if(this.points >= 75)
+          {
+              if(body.sprite.key == "erde")
+              {
+                  crateSprite.loadTexture("player"+15, 0);
+                  body.sprite.kill();
+                  this.player.width = 220;
+                  this.player.height = 220;
+
+                  this.player.body.setCircle(this.player.width / 2);
+              }
+
+          }
+
           for (var i = 0; i < this.enemies; i++) {
             if (body.sprite.key == "enemy" + i) {
               if (this.points >= (i * 5)) {
@@ -341,10 +356,24 @@ LittleStar.Game.prototype =
         if(this.lastPoints != this.points)
         {
           if (this.points == i*5) {
-            this.game.camera.scale.x = 18.2 - (17 * i / (this.enemies - 1));
-            this.game.camera.scale.y = 18.2 - (17 * i / (this.enemies - 1));
+            this.game.camera.scale.x = 18 - (17 * i / (this.enemies - 1));
+            this.game.camera.scale.y = 18 - (17 * i / (this.enemies - 1));
             this.player.width = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
             this.player.height = (this.points/5) * this.playerSize + this.playerBiggerThanEnemy;
+
+
+            if(this.points == 70)
+            {
+                this.player.width = 80;
+                this.player.height = 80;
+            }
+            else if(this.points == 75)
+            {
+                this.player.width = 120;
+                this.player.height = 120;
+            }
+
+
             this.player.body.setCircle(this.player.width / 2);
 
             console.log(this.game.camera.scale.x + " x " + this.game.camera.scale.y);
@@ -385,6 +414,15 @@ LittleStar.Game.prototype =
           {
             var angle = Math.atan2(member.y - obj1.y, member.x - obj1.x);
             obj1.body.rotation = angle - this.game.math.degToRad(90);  // correct angle of angry bullets (depends on the sprite used)
+
+            for(var i = 12; i < this.enemies; i++)
+                if(obj1.body.sprite.key == "enemy" + i)
+                {
+                    forceLeftRight = 10;
+                    forceLRcos = Math.cos(obj1.body.rotation) * forceLeftRight;
+                    forceLRsin = Math.sin(obj1.body.rotation) * forceLeftRight;
+                }
+
             if(player)
             {
                 speed =  (speed - this.jumpForce);
@@ -470,6 +508,10 @@ addEnemy: function(angle, enemyType){
   var h = enemy.height;
 
   enemy.height = enemyType * (this.playerSize *.97) + 1;
+
+  if(enemyType == this.enemies - 1)
+      enemy.height = 30 * (this.playerSize *.97) + 1;
+
   enemy.width = enemy.height * (w / h);
 
   //var crateSprite = this.game.add.sprite(x, y, "crate");
